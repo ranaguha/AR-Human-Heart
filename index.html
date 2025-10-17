@@ -4,14 +4,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AR Human Heart — v1.2</title>
-  <!-- Model Viewer: WebXR / Scene Viewer / Quick Look -->
+  <title>AR Human Heart — v1.2.1</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
-    :root {
-      --ui-bg: rgba(15,15,17,.72);
-      --ui-txt: #fff; --muted:#a1a1aa; --accent:#34d399; --warn:#f59e0b; --bad:#ef4444; --good:#22c55e;
-    }
+    :root { --ui-bg: rgba(15,15,17,.72); --ui-txt:#fff; --muted:#a1a1aa; --accent:#34d399; --bad:#ef4444; --good:#22c55e; }
     *{box-sizing:border-box}
     body{margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Noto Sans; background:#0b0d10; color:#eaeaea}
     header{position:fixed; inset:16px auto auto 16px; z-index:10; background:var(--ui-bg); padding:10px 14px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.35); backdrop-filter: blur(8px)}
@@ -31,11 +27,10 @@
 
     .credit{position:fixed; left:16px; bottom:62px; font-size:11px; color:#a0a0a0; opacity:.9}
     .hidden{display:none}
+    .help.hidden{display:none !important}
 
-    /* Hotspots */
-    .hotspot{background: rgba(0,0,0,.7); color:#fff; padding:6px 8px; border-radius:10px; font-size:12px; box-shadow:0 6px 18px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.08); white-space:nowrap}
+    .hotspot{background: rgba(0,0,0,.7); color:#fff; padding:6px 8px; border-radius:10px; font-size:12px; box-shadow:0 6px 18px rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.08); white-space:nowrap}
 
-    /* Info panel */
     .panel{position:fixed; left:16px; bottom:92px; max-width: 360px; background:var(--ui-bg); padding:12px 14px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.35); backdrop-filter: blur(8px)}
     .panel h3{margin:0 0 8px; font-size:14px}
     .panel p{margin:0; font-size:12px; color:var(--muted)}
@@ -43,37 +38,28 @@
     .chip{padding:6px 10px; border-radius:999px; background:#121319; color:#e6e6e6; cursor:pointer; font-size:12px; border:1px solid rgba(255,255,255,.06)}
     .chip.active{outline:2px solid var(--accent)}
 
-    /* Quiz */
-    .quiz{position:fixed; right:16px; top:16px; width:320px; background:var(--ui-bg); padding:12px 14px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.35); backdrop-filter: blur(8px); z-index:10}
+    .quiz{position:fixed; right:16px; top:16px; width:320px; max-width: calc(100vw - 32px); background:var(--ui-bg); padding:12px 14px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.35); backdrop-filter: blur(8px); z-index:10}
     .quiz h4{margin:0 0 8px; font-size:14px}
     .quiz .opt{display:block; width:100%; text-align:left; margin:6px 0; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.06); background:#121319; color:#e6e6e6; cursor:pointer}
     .quiz .opt.correct{outline:2px solid var(--good)}
     .quiz .opt.wrong{outline:2px solid var(--bad)}
     .quiz .msg{font-size:12px; color:#e6e6e6; margin-top:6px}
 
-    /* Help overlay */
     .help{position:fixed; inset:0; background:rgba(0,0,0,.7); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px; z-index:20}
     .help .box{max-width:520px; background:#121319; padding:18px 20px; border-radius:16px; border:1px solid rgba(255,255,255,.08)}
-    .help h3{margin:0 0 8px}
-    .help p{margin:6px 0 0; color:#d4d4d8}
   </style>
 </head>
 <body>
   <header>
-    <h1>Human Heart — v1.2</h1>
-    <p>Pinch to zoom · drag to rotate · two‑finger drag to pan</p>
+    <h1>Human Heart — v1.2.1</h1>
+    <p>Pinch to zoom · drag to rotate · two-finger drag to pan</p>
   </header>
   <span class="tag">Web · iOS · Android</span>
 
-  <!-- Viewer -->
   <model-viewer id="viewer"
     src="human_heart_3d_model.glb"
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-    ar-scale="auto"
-    camera-controls
-    auto-rotate
-    autoplay
+    ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto"
+    camera-controls auto-rotate autoplay
     exposure="1.0"
     environment-image="https://modelviewer.dev/shared-assets/environments/venetian_crossroads_2k.hdr"
     poster="poster.png"
@@ -82,22 +68,18 @@
     touch-action="pan-y"
     alt="3D model of a human heart">
 
-    <!-- AR button -->
-    <button slot="ar-button" id="arButton" class="btn" title="View in your space">🅰️🅡 View in your space</button>
+    <button slot="ar-button" id="arButton" class="btn">🅰️🅡 View in your space</button>
 
-    <!-- Progress bar -->
     <div slot="progress-bar" style="width:100%; height:4px; background:rgba(255,255,255,.08);">
       <div id="pb" style="height:100%; width:0; background:var(--accent);"></div>
     </div>
 
-    <!-- Hotspots (positions are approximations; tweak to match your model) -->
     <button class="hotspot" slot="hotspot-1" data-position="0m 0.03m 0.02m" data-normal="0m 1m 0m" data-annotation="Left Ventricle">Left Ventricle</button>
     <button class="hotspot" slot="hotspot-2" data-position="-0.02m 0.05m -0.01m" data-normal="0m 1m 0m" data-annotation="Right Atrium">Right Atrium</button>
     <button class="hotspot" slot="hotspot-3" data-position="0.02m 0.06m 0.00m" data-normal="0m 1m 0m" data-annotation="Aorta">Aorta</button>
     <button class="hotspot" slot="hotspot-4" data-position="-0.012m 0.02m 0.018m" data-normal="0m 1m 0m" data-annotation="Pulmonary Artery">Pulmonary Artery</button>
   </model-viewer>
 
-  <!-- Info panel & BPM controls -->
   <div class="panel" id="infoPanel">
     <h3 id="title">Tap a hotspot</h3>
     <p id="desc">Then press ▶ Guide for a short narration. Use BPM chips to simulate resting/exercise rates.</p>
@@ -106,11 +88,10 @@
       <span class="chip active" data-bpm="72">Normal 72 BPM</span>
       <span class="chip" data-bpm="120">Exercise 120 BPM</span>
       <button id="guide" class="btn" style="margin-left:auto">▶ Guide</button>
-      <button id="recentre" class="btn" title="Re-launch AR to place again">🎯 Re‑place</button>
+      <button id="recentre" class="btn" title="Re-launch AR to place again">🎯 Re-place</button>
     </div>
   </div>
 
-  <!-- Mini Quiz -->
   <div class="quiz" id="quiz">
     <h4>Quick Quiz</h4>
     <div class="q">Which chamber pumps blood into the aorta?</div>
@@ -120,18 +101,16 @@
     <div class="msg" id="qmsg"></div>
   </div>
 
-  <!-- Help overlay (first visit) -->
-  <div class="help hidden" id="help">
+  <div class="help" id="help">
     <div class="box">
       <h3>Welcome to AR Human Heart</h3>
-      <p>Rotate with one finger · zoom with pinch · pan with two fingers. Tap hotspots to learn. Use the AR button to place the heart in your space. Tap 🎯 Re‑place to re-launch AR if needed.</p>
+      <p>Rotate with one finger · zoom with pinch · pan with two fingers. Tap hotspots to learn. Use the AR button to place the heart in your space. Tap 🎯 Re-place to re-launch AR if needed.</p>
       <div style="margin-top:10px; display:flex; justify-content:center">
         <button id="closeHelp" class="btn">Got it</button>
       </div>
     </div>
   </div>
 
-  <!-- Utility controls -->
   <div class="controls">
     <div class="row">
       <button id="pulse" class="btn" aria-pressed="true" title="Toggle heartbeat animation">❤️ Heartbeat</button>
@@ -153,10 +132,7 @@
     const title = document.getElementById('title');
     const desc = document.getElementById('desc');
     const bpmChips = [...document.querySelectorAll('.chip')];
-    const help = document.getElementById('help');
-    const closeHelp = document.getElementById('closeHelp');
 
-    // Facts bank
     const facts = {
       'Left Ventricle': 'Pumps oxygen-rich blood into the aorta and out to the body. Thickest muscular walls.',
       'Right Atrium': 'Receives deoxygenated blood from the vena cavae and passes it to the right ventricle.',
@@ -164,16 +140,9 @@
       'Pulmonary Artery': 'Carries deoxygenated blood from the right ventricle to the lungs.'
     };
 
-    // ----- Loading progress & error hint -----
-    mv.addEventListener('progress', (e) => {
-      pb.style.width = `${Math.round(e.detail.totalProgress * 100)}%`;
-    });
-    mv.addEventListener('error', (e) => {
-      console.warn('Model-Viewer error:', e.message || e.detail);
-      desc.textContent = 'Could not load model. Check filename/path and CORS.';
-    });
+    mv.addEventListener('progress', (e) => { pb.style.width = `${Math.round(e.detail.totalProgress * 100)}%`; });
+    mv.addEventListener('error', (e) => { console.warn('Model-Viewer error:', e.message || e.detail); desc.textContent = 'Could not load model. Check filename/path and CORS.'; });
 
-    // ----- Camera reset -----
     resetBtn.addEventListener('click', () => {
       mv.cameraOrbit = '0deg 75deg 45%';
       mv.fieldOfView = '30deg';
@@ -181,110 +150,83 @@
       mv.style.transform = 'scale(1)';
     });
 
-    // ----- Heartbeat pulse (BPM adjustable) -----
-    let pulsing = true, rafId = null, t0 = null; // default on
-    let bpm = 72; // default
-    const amp = 0.06; // pulse amplitude
-
+    let pulsing = true, rafId = null, t0 = null;
+    let bpm = 72; const amp = 0.06;
     function startPulse(){
       cancelAnimationFrame(rafId);
       t0 = performance.now();
       const animate = (t) => {
         if(!pulsing){ mv.style.transform = 'scale(1)'; return; }
-        const period = 60000 / bpm; // ms per beat
+        const period = 60000 / bpm;
         const dt = (t - t0) % period;
         const phase = (dt / period) * Math.PI * 2;
-        const scale = 1 + Math.max(0, Math.sin(phase)) * amp; // systole only
+        const scale = 1 + Math.max(0, Math.sin(phase)) * amp;
         mv.style.transform = `scale(${scale.toFixed(4)})`;
         rafId = requestAnimationFrame(animate);
       };
       rafId = requestAnimationFrame(animate);
     }
-
     pulseBtn.addEventListener('click', () => {
-      pulsing = !pulsing;
-      pulseBtn.setAttribute('aria-pressed', pulsing);
+      pulsing = !pulsing; pulseBtn.setAttribute('aria-pressed', pulsing);
       if(pulsing){ startPulse(); } else { cancelAnimationFrame(rafId); mv.style.transform = 'scale(1)'; }
     });
-
     bpmChips.forEach(ch => ch.addEventListener('click', () => {
-      bpmChips.forEach(c => c.classList.remove('active'));
-      ch.classList.add('active');
-      bpm = parseInt(ch.dataset.bpm, 10);
-      if(pulsing) startPulse();
+      bpmChips.forEach(c => c.classList.remove('active')); ch.classList.add('active');
+      bpm = parseInt(ch.dataset.bpm, 10); if(pulsing) startPulse();
     }));
-
     startPulse();
 
-    // ----- Wireframe toggle -----
     let wired = false;
     wireBtn.addEventListener('click', async () => {
       await mv.updateComplete;
       const matList = mv.model?.materials || [];
-      wired = !wired;
-      wireBtn.setAttribute('aria-pressed', wired);
+      wired = !wired; wireBtn.setAttribute('aria-pressed', wired);
       for (const m of matList) { try { m.wireframe = wired; } catch (e) {} }
     });
 
-    // ----- Hotspot interactions & narration -----
     const hotspots = [...document.querySelectorAll('button[slot^="hotspot-"]')];
-
-    hotspots.forEach(h => {
-      h.addEventListener('click', () => {
-        const part = h.dataset.annotation;
-        title.textContent = part;
-        desc.textContent = facts[part] || 'Anatomy detail.';
-        speak(`${part}. ${facts[part] || ''}`);
-      });
-    });
-
+    hotspots.forEach(h => h.addEventListener('click', () => {
+      const part = h.dataset.annotation;
+      title.textContent = part; desc.textContent = facts[part] || 'Anatomy detail.';
+      speak(`${part}. ${facts[part] || ''}`);
+    }));
     guideBtn.addEventListener('click', async () => {
       for(const h of hotspots){
         const part = h.dataset.annotation; h.focus();
         title.textContent = part; desc.textContent = facts[part] || '';
-        speak(`${part}. ${facts[part] || ''}`);
-        await wait(3000);
+        speak(`${part}. ${facts[part] || ''}`); await wait(3000);
       }
     });
 
-    // ----- Re-place in AR (relaunch AR session) -----
-    recenterBtn.addEventListener('click', () => {
-      try{ mv.enterAR(); }catch(e){ console.log('AR not supported here.'); }
-    });
+    recenterBtn.addEventListener('click', () => { try{ mv.enterAR(); }catch(e){ console.log('AR not supported here.'); } });
 
     function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-    // Basic speech synthesis
     function speak(text){
-      try{
-        if(!('speechSynthesis' in window)) return;
+      try{ if(!('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
-        speechSynthesis.speak(u);
+        u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0; speechSynthesis.speak(u);
       }catch(e){}
     }
 
-    // ----- Quiz logic -----
-    const qmsg = document.getElementById('qmsg');
-    document.querySelectorAll('.quiz .opt').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.quiz .opt').forEach(b=>b.classList.remove('correct','wrong'));
-        const correct = btn.dataset.a === 'Left Ventricle';
-        btn.classList.add(correct ? 'correct' : 'wrong');
-        qmsg.textContent = correct ? '✅ Correct! The left ventricle feeds the aorta.' : '❌ Not quite. The left ventricle pumps into the aorta.';
-      });
-    });
+    // Welcome overlay with guaranteed dismissal
+    const help = document.getElementById('help');
+    const closeHelp = document.getElementById('closeHelp');
+    const nohelp = new URLSearchParams(location.search).get('nohelp') === '1';
+    function killHelp(){
+      help.classList.add('hidden');
+      help.style.display = 'none';
+    }
+    if (nohelp) { killHelp(); }
+    else {
+      setTimeout(killHelp, 1500);
+      closeHelp?.addEventListener('click', killHelp);
+      help.addEventListener('click', (e) => { if (e.target === help) killHelp(); });
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') killHelp(); });
+    }
 
-    // ----- Help overlay (first load per device) -----
-    const SEEN_HELP_KEY = 'heart_ar_seen_help_v12';
-    if(!localStorage.getItem(SEEN_HELP_KEY)) help.classList.remove('hidden');
-    closeHelp.addEventListener('click', () => { help.classList.add('hidden'); localStorage.setItem(SEEN_HELP_KEY,'1'); });
-
-    // Initial framing
     mv.cameraOrbit = '0deg 75deg 45%';
     mv.fieldOfView = '30deg';
   </script>
 </body>
 </html>
-
